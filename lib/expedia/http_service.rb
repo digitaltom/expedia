@@ -55,7 +55,7 @@ module Expedia
 
         # If there is an exception make a [Expedia::APIError] object to return
         if response.exception?
-          Expedia::APIError.new(response.status, response.body)
+          response.exception
         else
           response
         end

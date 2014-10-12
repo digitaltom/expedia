@@ -19,8 +19,7 @@ module Expedia
     # Create a new API Error
     # @return the newly created APIError
     def initialize(status, body)
-      @error_body = body
-      @body = body
+      @error_body = @body = body
       @status = status
 
       begin
@@ -47,7 +46,19 @@ module Expedia
     end
   end
 
-  # A standard Error calss for Raising exception if [cid, shared_secret, api_key] are not provided.
+
+  class MultipleLocationsFoundError < ::Expedia::APIError
+    attr_accessor :locations
+
+    def initialize(status, body)
+      super
+      @locations = @body['HotelListResponse']['LocationInfos']['LocationInfo']
+    end
+
+  end
+
+
+  # A standard Error class for Raising exception if [cid, shared_secret, api_key] are not provided.
   class AuthCredentialsError < ::Expedia::ExpediaError; end
 
 end
