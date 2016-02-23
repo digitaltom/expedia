@@ -37,6 +37,10 @@ Expedia.shared_secret = 'your_shared_secret'
 Expedia.locale = 'en_US'
 Expedia.currency_code = 'USD'
 Expedia.minor_rev = 13
+Expedia.use_signature = true # must be false if using ip whitelisting instead of signature
+# Optional configuration...
+Expedia.timeout = 1 # read timeout in sec
+Expedia.open_timeout = 1 # connection timeout in sec
 </pre>
 
 Or you can execute the following command to create an intializer (if you are using rails)
@@ -54,7 +58,7 @@ After configuring keys, default locale, currency and minor_rev for EAN use
 api = Expedia::Api.new
 
 # Method to search for a hotel. see http://developer.ean.com/docs/hotel-list/
-response = api.get_list({:propertyName => 'Hotel Moa Berlin', :destinationString => 'berlin'})
+response = api.get_list({:propertyName => 'Hotel Moa', :destinationString => 'berlin'})
 
 # execute this method to know if there is any exception
 response.exception? # false if success
@@ -125,13 +129,16 @@ response = api.get_static_reservation({	:arrivalDate => "10/10/2013", :departure
 
 h3. Logging
 
-Expedia::Utils.logger points to STDOUT by default. You can use it to Log in Rails Applications
+Expedia::Utils.logger points to STDOUT by default. You can use it to Log in Rails applications.
 
 <pre>
 Expedia::Utils.logger = Rails.logger
 
 # And loggig methods available
 [:debug, :info, :warn, :error, :fatal]
+
+# Default logger level is Logger::ERROR. You can change it by setting
+Expedia.logger.level = Logger::DEBUG # Or whatever level you want...
 </pre>
 
 

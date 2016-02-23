@@ -5,8 +5,10 @@ module Expedia
   module HTTPService
 
     API_SERVER = 'api.eancdn.com'
+    # The development api server is not reliable. Often gives 400...
+    # DEVELOPMENT_API_SERVER = 'dev.api.ean.com'
+    DEVELOPMENT_API_SERVER = 'api.ean.com'
     RESERVATION_SERVER = 'book.api.ean.com'
-    DEVELOPMENT_SERVER = 'dev.api.ean.com'
 
     class << self
 
@@ -20,7 +22,7 @@ module Expedia
       # @return a complete server address with protocol
       def server(options = {})
         if Expedia.cid.to_i == 55505 && !options[:reservation_api]
-          server = DEVELOPMENT_SERVER
+          server = DEVELOPMENT_API_SERVER
         else
           server = API_SERVER
         end
@@ -37,8 +39,8 @@ module Expedia
       # @return the connection obj with the timeouts set if they have been initialized
       def add_timeouts(conn, options)
         if !options[:ignore_timeout]
-          conn.options.timeout = Expedia.timeout.to_i if Expedia.timeout.present?
-          conn.options.open_timeout = Expedia.open_timeout.to_i if Expedia.open_timeout.present?
+          conn.options.timeout = Expedia.timeout.to_i if Expedia.timeout
+          conn.options.open_timeout = Expedia.open_timeout.to_i if Expedia.open_timeout
         end
         conn
       end
@@ -91,8 +93,9 @@ module Expedia
       # Common Parameters required for every Call to Expedia Server.
       # @return [Hash] of all common parameters.
       def common_parameters
-        { :cid => Expedia.cid, :sig => signature, :apiKey => Expedia.api_key, :minorRev => Expedia.minor_rev,
-          :_type => 'json', :locale => Expedia.locale, :currencyCode => Expedia.currency_code }
+        params = { :cid => Expedia.cid, :apiKey => Expedia.api_key, :minorRev => Expedia.minor_rev, :_type => 'json', :locale => Expedia.locale, :currencyCode => Expedia.currency_code }
+        params.merge!(:sig => signature) if Expedia.use_signature
+        return params
       end
 
     end
